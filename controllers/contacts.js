@@ -24,47 +24,67 @@ const add = async (req, res) => {
 
 const getById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await Contact.findById(contactId);
+  const userId = req.user._id;
+
+  const result = await Contact.findOne({ _id: contactId, owner: userId });
 
   if (!result) {
     throw HttpError(404);
   }
+
   res.json(result);
 };
 
 const updateById = async (req, res) => {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
-    new: true,
-  });
+  const result = await Contact.findOneAndUpdate(
+    {
+      _id: contactId,
+      owner: userId,
+    },
+    req.body,
+    { new: true }
+  );
 
   if (!result) {
     throw HttpError(404);
   }
+
   res.json(result);
 };
 
 const updateFavorite = async (req, res) => {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
-    new: true,
-  });
+  const result = await Contact.findOneAndUpdate(
+    { _id: contactId, owner: userId },
+    req.body,
+    { new: true }
+  );
 
   if (!result) {
     throw HttpError(404);
   }
+
   res.json(result);
 };
 
 const removeById = async (req, res) => {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const result = await Contact.findByIdAndRemove(contactId);
+  const result = await Contact.findOneAndRemove({
+    _id: contactId,
+    owner: userId,
+  });
+
   if (!result) {
     throw HttpError(404);
   }
+
   res.json({ message: "contact deleted" });
 };
 
